@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Sign up </title>
+  </head>
+  <body>
+     <div align ="center">
+        <h1>Sign up</h1>
+
+        <form action="/signup" method="post">
+            <input type="text" name ="name" placeholder="Name"/>
+            </br>
+            <input type="email" name ="email" placeholder="E-mail"/>
+        </br>
+            <input type="password" name ="password" placeholder="Password"/>
+            </br>
+
+            <input type="password" name ="confirmpass" placeholder="Confirm Password"/>
+
+
+        </br>
+
+            <input type="text" name ="phone" placeholder="Phone"/>
+        </br>
+
+            <input type="text" name ="address" placeholder="Address"/>
+        </br>
+            Country: <select name="id_country">
+                <%for (var key in countries){%>
+                    <option value="<%=countries[key].id%>"> <%=countries[key].country_name%></option>
+                <%}%>
+            </select>
+        </br>
+
+            <button> Sign up </button>
+        </form>
+
+        </br>
+        <button onclick="location.href='/'"> Home </button>
+
+        <% if(errors){ %>
+        <ul>
+            <% for (var key in errors){ %>
+            <li><%=errors[key].msg%></li>
+            <%}%>
+        </ul>
+
+        <%}%>
+
+    </div>
+  </body>
+</html>

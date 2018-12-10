@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <script type="text/javascript">
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let request = new XMLHttpRequest();
+            let video_names = [];
+            let video_titles = [];
+            let json_search = {};
+            request.open('GET', 'http://localhost:8000/'+'video_list.txt', true);
+            request.send(null);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4 && request.status === 200) {
+                    let type = request.getResponseHeader('Content-Type');
+
+                    let obj  = request.responseText;
+                    let video_metadata = obj.split('\n');
+                    var video_names = []
+                    for (i = 0 ; i < video_metadata.length; i++){
+                        let aux_vec = video_metadata[i].split(":");
+                        video_names.push(aux_vec[0]);
+                        video_titles.push(aux_vec[1]);
+                    }
+                    video_names.splice(-1,1);
+
+
+                    doAjax(-1);
+                    function doAjax(num){
+                        if(num < video_names.length-1){
+                            num += 1;
+                            request.open('GET', 'http://localhost:8000/videos/'+video_names[num] + '/gt_'+video_names[num]+'.json', true);
+                            request.send(null);
+                            request.onreadystatechange = function () {
+                                if (request.readyState === 4 && request.status === 200) {
+                                    obj  = JSON.parse(request.responseText);
+                                    let keys = Object.keys(obj);
+                                    let concat_keyes = '';
+                                    for (i = 0; i < keys.length; ++i){
+                                        concat_keyes += obj[keys[i]].toLowerCase() + ' / ';
+
+                                    }
+                                    json_search[video_names[num]] = concat_keyes + " / " +  video_titles[num];
+
+                                    doAjax(num);
+
+
+
+                                }
+                            }
+
+                        }
+                    }
+                    console.log(json_search);
+
+                }
+            }
+            var site_search = document.getElementById('site-search');
+            site_search.addEventListener('keyup', function(){
+                let site_search_after = this.value.toLowerCase();
+
+                let keys = Object.keys(json_search);
+                let videos_filter = [];
+                let first_index = -1;
+                for (let i = 0; i < keys.length; i++){
+                    let auxList = json_search[keys[i]].split(" / ");
+                    for (let j = 0; j < auxList.length; j++){
+                        if((auxList[j]).includes(site_search_after)){
+
+                            videos_filter.push(keys[i] + "#" + j);
+                            //console.log(site_search_after);
+
+                            break;
+                        }
+                    }
+
+                }
+                let div_row = document.getElementById('row_id');
+                while (div_row.firstChild) {
+                    div_row.removeChild(div_row.firstChild);
+                }
+
+                for (i  = 0; i < videos_filter.length; i++){
+                    let a = document.createElement('a');
+                    a.href = "/video/"+videos_filter[i];
+                    div_row.appendChild(a);
+                    let div_column = document.createElement('div');
+                    div_column.className =  'column';
+                    a.appendChild(div_column);
+                    let video  = document.createElement('video');
+                    video.src = 'http://localhost:8000/videos/'+ videos_filter[i].split("#")[0] +"/" + videos_filter[i].split("#")[0] + '.mp4';
+                    //video.preload = "metadata";
+                    video.poster = 'http://localhost:8000/videos/'+ videos_filter[i].split("#")[0] +"/" + 'thumb.png';
+
+                    div_column.appendChild(video);
+
+                 }
+
+
+            });
+        });
+
+      </script>
+    <meta charset="utf-8">
+    <title>VoD Streaming </title>
+    <style>
+        video {
+           width: 426px;
+           height: 240px;
+           border:1px solid black;
+
+        }
+
+        *{
+            box-sizing: border-box;
+        }
+
+/* Create four equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 426px;
+            height: 280px;
+            padding: 10px;
+        ;
+            margin-right: 20px;
+
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+            margin-bottom: 100px;
+        }
+
+        /* Responsive layout - makes the four columns stack on top of each other instead of next to each other */
+        @media screen and (max-width: 1024px) {
+            .column {
+                width: 100%;
+            }
+        }
+    </style>
+  </head>
+  <body>
+     <div align ="center">
+            <h1>Video Catalog</h1>
+            <input type="search" id="site-search" name="search" aria-label="Search through catalog content"/>
+            <button>Search</button>
+
+            <div class="row" id ="row_id">
+                <% for (var key in videolist){ %>
+                <a href= '<%= '/video/' + videolist[key]%>'>
+                    <div class="column" >
+
+                        <video    poster=<%='http://localhost:8000/videos/'+ videolist[key] +"/" + "thumb.png"%> src= <%='http://localhost:8000/videos/'+ videolist[key] +"/" + videolist[key] + ".mp4"%> />
+                    </div>
+                <a/>
+                <%}%>
+            </div>
+
+                <button onClick = "location.href= '/logout'"> Logout</button>
+    </div>
+
+
+  </body>
+</html>

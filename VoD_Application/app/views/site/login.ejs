@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>VoD Streaming </title>
+  </head>
+  <body>
+     <div align ="center">
+            <h1>Login</h1>
+
+            <form action="/login" method="post">
+                <input type="email" name ="email" placeholder="E-mail"/>
+                <input type="password" name ="password" placeholder="Password"/>
+                <button> Login </button>
+            </form>
+        </br>
+                <button onclick="location.href='/signup'"> Sign up </button>
+
+            <ul>
+                <% for (var key in loginError){%>
+                    <li><%=loginError[key]%> </li>
+                <%}%>
+                <% for (var key in validationErrors){%>
+                    <li><%=validationErrors[key].msg%> </li>
+                <%}%>
+            </ul>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,127 @@
+
+<script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+<script type="text/javascript">
+    var endTimeObj = [];
+    var currentEndTime = null;
+    var topic_URL = null;
+    document.addEventListener('DOMContentLoaded', function () {
+        var player = dashjs.MediaPlayer().create();
+        var url ='';
+
+
+        var topic_URL = 'http://localhost:8000/videos/'+'<%=video_name%>'+'/topic' +document.URL.split("#")[1]+'/' + 'topic_dash_'+document.URL.split("#")[1]+".mpd"
+        player.initialize(document.getElementById("videoplayer"), topic_URL, true);
+
+
+        var request = new XMLHttpRequest();
+        request.open('GET', 'http://localhost:8000/videos/'+'<%=video_name%>'+'/gt_'+'<%=video_name%>'+'.json', true);
+        request.send(null);
+        request.onreadystatechange = function () {
+            if (request.readyState === 4 && request.status === 200) {
+                var type = request.getResponseHeader('Content-Type');
+
+                var obj  = JSON.parse(request.responseText);
+
+                keys = Object.keys(obj);
+                item = {}
+
+                for (var i = 0; i < keys.length; i++){
+                    var node = document.createElement("li");
+                    var child = document.createElement("a")
+                    var textnode = document.createTextNode(keys[i] + "s: " + obj[keys[i]] );
+                    child.append(textnode)
+                    child.href = "#"+i
+                    node.append(child)
+                    k = keys[i].toString();
+                    //console.log(k);
+                    if(i < keys.length-1){
+
+                        item[k] = keys[i+1];
+                        console.log(k);
+                        console.log(keys[i+1]);
+                    }else{
+                        item[k] = -1
+                    }
+
+
+                    document.getElementById("topicList").appendChild(node);
+
+
+                }
+                endTimeObj.push(item);
+                console.log(endTimeObj[0][0]);
+
+
+
+            }
+        }
+
+
+
+        var video = document.getElementById("videoplayer");
+
+        video.addEventListener("timeupdate", function(){
+        // check whether we have passed 5 minutes,
+        // current time is given in seconds
+        /*if(currentEndTime !== null && currentEndTime !== -1){
+            if(this.currentTime >= currentEndTime) {
+                // pause the playback
+                this.pause();
+                alert('Deseja assistir o próximo tópico?')
+            }
+        }*/
+        });
+
+        window.addEventListener('hashchange', function(){
+            player.reset();
+            player = dashjs.MediaPlayer().create();
+
+            var topic_URL = 'http://localhost:8000/videos/'+'<%=video_name%>'+'/topic' +document.URL.split("#")[1]+'/' + 'topic_dash_'+document.URL.split("#")[1]+".mpd"
+            player.initialize(document.getElementById("videoplayer"), topic_URL, true);
+
+
+
+             /**var element = document.getElementById('video');
+            element.parentNode.removeChild(element);
+            topic_URL = 'http://localhost:8000/2PhaT6AbH3Q/topic' +document.URL.split("#")[1]+'/' + 'topic_dash_'+document.URL.split("#")[1]+".mpd"
+            var p = document.getElementById('v');
+            var newElement = document.createElement('video');
+            newElement.setAttribute('id', 'video');
+            newElement.setAttribute('src', topic_URL);
+            newElement.setAttribute('data-dashjs-player','');
+            newElement.setAttribute('controls','');
+            p.appendChild(newElement);
+            newElement.load();**/
+
+            //document.getElementById("video").src = topic_URL;
+
+            //currentEndTime = endTimeObj[0][document.URL.split("#")[1]];
+        });
+    });
+
+
+</script>
+<style>
+    video {
+       width: 640px;
+       height: 360px;
+    }
+</style>
+<body>
+    <div style="width: 100%; overflow: hidden;">
+        <div style="width: 600px; float: left;">
+            <ul id ="topicList">
+
+            </ul>
+        </div>
+        <div>
+            <p> </p>
+        </div>
+        <div id="v" style="margin-left: 620px;">
+
+           <video id="videoplayer"   controls preload="metadata"></video>
+       </div>
+   </div>
+   <button onclick="location.href='/catalog'">Back </button>
+
+</body>
