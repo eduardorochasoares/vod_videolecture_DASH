@@ -2,7 +2,7 @@ var catalogController = require('../controllers/catalogController');
 var loginController = require('../controllers/loginController');
 var videoController = require('../controllers/videoController');
 require("dotenv-safe").load();
-
+var dash_server_ip = 'http://127.0.0.1:8000';
 var jwt = require('jsonwebtoken');
 
 var verifyJWT = function(req, res, next){
@@ -33,7 +33,7 @@ module.exports = function(app){
     app.get('/catalog', verifyJWT,  function(req, res){
         list = videoController.getVideoList(req, res);
 
-        catalogController.catalog(req, res, list);
+        catalogController.catalog(req, res, list, dash_server_ip);
 
     });
       //console.log(clientModel.all())
@@ -41,7 +41,7 @@ module.exports = function(app){
   app.get('/video/:videoID',verifyJWT, function(req, res) {
       //video_file_path = videoController.getVideoPath(req, res);
       video_name = req.params.videoID;
-      videoController.streamingVideo(req, res, video_name);
+      videoController.streamingVideo(req, res, video_name, dash_server_ip);
 
   });
 

@@ -4,10 +4,10 @@ var videoModel = require('../models/videoModel')();
 module.exports.getVideoPath = function(req, res){
     return req.params.id;
 };
-module.exports.streamingVideo = function(req, res, video_name ){
+module.exports.streamingVideo = function(req, res, video_name, dash_server_ip ){
     console.log(video_name);
 
-    res.render("site/video", {videoname : video_name});
+    res.render("site/video", {videoname : video_name, dash_server : dash_server_ip});
     /**const path = 'assets/jjvBnvA8GzA.mp4'
     const stat = fs.statSync(path)
     const fileSize = stat.size

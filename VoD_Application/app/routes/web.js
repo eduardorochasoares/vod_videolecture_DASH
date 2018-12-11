@@ -23,11 +23,18 @@ module.exports = function(app){
         loginController.authentication(req, res);
     });
 
-    
+
 
     app.get('/logout',function(req,res){
         logoutController.logout(req, res);
       //console.log(clientModel.all())
+    });
+    app.get('/dash.all.min.js', function(req, res){
+        let fs = require('fs');
+        let script = fs.readFileSync("app/views/site/dashjs/dash.all.min.js", "utf8");
+        console.log(script);
+        res.write(script);
+
     });
 
 };

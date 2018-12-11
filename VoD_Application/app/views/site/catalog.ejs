@@ -5,10 +5,10 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             let request = new XMLHttpRequest();
-            let video_names = [];
+            var video_names = [];
             let video_titles = [];
             let json_search = {};
-            request.open('GET', 'http://localhost:8000/'+'video_list.txt', true);
+            request.open('GET','<%=dash_server%>' + '/video_list.txt', true);
             request.send(null);
             request.onreadystatechange = function () {
                 if (request.readyState === 4 && request.status === 200) {
@@ -24,12 +24,12 @@
                     }
                     video_names.splice(-1,1);
 
-
+                    console.log(video_names);
                     doAjax(-1);
                     function doAjax(num){
                         if(num < video_names.length-1){
                             num += 1;
-                            request.open('GET', 'http://localhost:8000/videos/'+video_names[num] + '/gt_'+video_names[num]+'.json', true);
+                            request.open('GET','<%=dash_server%>' +'/videos/'+video_names[num] + '/gt_'+video_names[num]+'.json', true);
                             request.send(null);
                             request.onreadystatechange = function () {
                                 if (request.readyState === 4 && request.status === 200) {
@@ -88,9 +88,9 @@
                     div_column.className =  'column';
                     a.appendChild(div_column);
                     let video  = document.createElement('video');
-                    video.src = 'http://localhost:8000/videos/'+ videos_filter[i].split("#")[0] +"/" + videos_filter[i].split("#")[0] + '.mp4';
+                    video.src = '<%=dash_server%>'+'/videos/'+ videos_filter[i].split("#")[0] +"/" + videos_filter[i].split("#")[0] + '.mp4';
                     //video.preload = "metadata";
-                    video.poster = 'http://localhost:8000/videos/'+ videos_filter[i].split("#")[0] +"/" + 'thumb.png';
+                    video.poster = '<%=dash_server%>'+'/videos/'+ videos_filter[i].split("#")[0] +"/" + 'thumb.png';
 
                     div_column.appendChild(video);
 
@@ -153,7 +153,7 @@
                 <a href= '<%= '/video/' + videolist[key]%>'>
                     <div class="column" >
 
-                        <video    poster=<%='http://localhost:8000/videos/'+ videolist[key] +"/" + "thumb.png"%> src= <%='http://localhost:8000/videos/'+ videolist[key] +"/" + videolist[key] + ".mp4"%> />
+                        <video    poster=<%= dash_server + "/videos/" + videolist[key] +"/" + "thumb.png"%> src= <%= dash_server + "/videos/" + videolist[key] +"/" + videolist[key] + ".mp4"%> />
                     </div>
                 <a/>
                 <%}%>
